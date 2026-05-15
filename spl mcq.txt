@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Penal Laws (SPL) Flashcards</title>
+    <style>
+        :root {
+            --bg-color: #ADD8E6;
+            --text-color: #000000;
+            --card-bg: #ffffff;
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --border-color: #e0e0e0;
+            --btn-bg: #e9ecef;
+            --btn-hover: #d3d9df;
+            --success-color: #2ecc71;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #2c2c2f;
+            --text-color: #ffffff;
+            --card-bg: #1e1e1e;
+            --primary-color: #8ab4f8;
+            --accent-color: #4dabf7;
+            --border-color: #333333;
+            --btn-bg: #3d3d3d;
+            --btn-hover: #4d4d4d;
+            --success-color: #4caf50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .header {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5em;
+            color: var(--primary-color);
+        }
+
+        /* Custom Toggle Switch */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 80px;
+            height: 40px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: transparent;
+            border: 2px solid white;
+            border-radius: 40px;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "☀️";
+            height: 26px;
+            width: 26px;
+            left: 3px;
+            bottom: 7px;
+            border-radius: 0%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: .4s;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(36px);
+            content: "🌚";
+        }
+
+
+        .progress {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        /* Flashcard 3D Scene */
+        .scene {
+            width: 90%;
+            max-width: 800px;
+            height: 450px;
+            perspective: 1000px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            padding: 30px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .card-front {
+            justify-content: flex-start;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .question {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .options-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .options-list li {
+            background: var(--btn-bg);
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        .answer-label {
+            font-size: 1.2em;
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .correct-answer {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--success-color);
+            background: var(--btn-bg);
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .control-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.1em;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .control-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .control-btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .flip-btn {
+            background-color: var(--primary-color);
+        }
+        .flip-btn:hover {
+            background-color: #1abc9c;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>SPL Flashcards</h1>
+        
+        <div class="theme-switch-wrapper">
+            <label class="theme-switch" for="checkbox">
+                <input type="checkbox" id="checkbox" onchange="toggleTheme(this)" />
+                <div class="slider"></div>
+            </label>
+        </div>
+    </div>
+
+    <div class="progress" id="progress-text">Card 1 of 164</div>
+
+    <div class="scene">
+        <div class="card" id="flashcard" onclick="flipCard()">
+            <div class="card-face card-front">
+                <div class="question" id="card-question">Loading...</div>
+                <ul class="options-list" id="card-options"></ul>
+            </div>
+            
+            <div class="card-face card-back">
+                <div class="answer-label">Correct Answer</div>
+                <div class="correct-answer" id="card-answer">Loading...</div>
+                <p style="margin-top: 20px; color: var(--text-color); opacity: 0.7;">(Tap card to flip back)</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="control-btn" id="prev-btn" onclick="prevCard()">&larr; Prev</button>
+        <button class="control-btn flip-btn" onclick="flipCard()">Flip Card</button>
+        <button class="control-btn" id="next-btn" onclick="nextCard()">Next &rarr;</button>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "1. Under RA 9160, what is the essence of the offense of money laundering?", options: ["A. The mere possession of ill-gotten wealth", "B. The act of \"washing\" or legitimizing ill-gotten wealth by breaking the audit trail", "C. The commission of a predicate crime", "D. The evasion of taxes from legitimate business earnings"], answer: 1 },
+            { question: "2. Which of the following is an enumerated predicate crime or \"unlawful activity\" under RA 9160?", options: ["A. Jaywalking", "B. Slight physical injuries", "C. Plunder and corruption-related offenses under RA 3019", "D. Simple slander"], answer: 2 },
+            { question: "3. What process introduces illicit funds into the financial system during money laundering?", options: ["A. Placement", "B. Layering", "C. Integration", "D. Structuring"], answer: 0 },
+            { question: "4. Which of the following is NOT an element of the core punishable act of money laundering under Section 4?", options: ["A. The existence of proceeds derived from an unlawful activity", "B. The offender's knowledge that the property is the product of such unlawful activity", "C. A prior criminal conviction for the predicate offense", "D. The performance of any act of transaction, conversion, or concealment of such proceeds"], answer: 2 },
+            { question: "5. Under Section 4(a)(2) of RA 9160, who may be held liable for facilitating money laundering?", options: ["A. Only the principal who committed the predicate crime", "B. Any person who unknowingly receives funds from a criminal", "C. Professionals like accountants or bank officers who knowingly assist in concealing illicit proceeds", "D. Only government officials"], answer: 2 },
+            { question: "6. A bank manager informs a client that their account is under AMLC scrutiny to allow them to withdraw funds before freezing. What offense is committed?", options: ["A. Bribery", "B. Tipping off (Section 14)", "C. Conspiracy", "D. Layering"], answer: 1 },
+            { question: "7. What is the primary purpose of a freeze order issued by the AMLC?", options: ["A. To immediately penalize the account holder", "B. To permanently confiscate the funds in favor of the government", "C. To preserve monetary instruments or property suspected to be related to unlawful activity", "D. To pay for the cost of the investigation"], answer: 2 },
+            { question: "8. Which court has exclusive jurisdiction over petitions for the lifting of a freeze order?", options: ["A. Municipal Trial Court", "B. Regional Trial Court", "C. Sandiganbayan", "D. Court of Appeals"], answer: 3 },
+            { question: "9. In the case of Lingad v. People, what did the Supreme Court explicitly state regarding the prosecution of money laundering?", options: ["A. It requires a prior conviction of the predicate offense.", "B. It can proceed independently of the prosecution of the related unlawful activity.", "C. It must be filed simultaneously with the predicate offense.", "D. It is absorbed by the predicate offense."], answer: 1 },
+            { question: "10. According to Lingad v. People, how may the offender's \"knowledge\" of the illicit origin of funds be established?", options: ["A. Only through a written confession", "B. Through circumstantial evidence", "C. Only by direct testimony of a co-conspirator", "D. Through a final court judgment"], answer: 1 },
+            { question: "11. Under Section 5 of RA 9160, if a syndicate prepares falsified import documents to justify illegal proceeds but is intercepted before transferring the funds, what is the liability?", options: ["A. Fully consummated money laundering", "B. Attempted money laundering", "C. Conspiracy to commit estafa", "D. Tipping off"], answer: 1 },
+            { question: "12. The AMLA framework places what burden on account holders once a prima facie link to unlawful activity is established regarding a freeze order?", options: ["A. The burden to prove they committed no predicate crime beyond reasonable doubt", "B. The burden of explanation to demonstrate legitimate ownership and lawful source of funds", "C. The burden to pay a fine to lift the order", "D. No burden, as the state must prove everything beyond reasonable doubt for a freeze order"], answer: 1 },
+            { question: "13. Under Section 4 of RA 9165, when is the offense of importation of dangerous drugs consummated?", options: ["A. When the drugs are successfully sold in the local market", "B. By the mere act of bringing the prohibited substance into Philippine territory", "C. When the importer receives payment", "D. Only if the quantity exceeds 500 grams"], answer: 1 },
+            { question: "14. What is the crucial requirement for proving the illegal sale of dangerous drugs under Section 5?", options: ["A. The full payment of the agreed price", "B. The presence of the confidential informant in court", "C. The preservation of the corpus delicti and the integrity of the chain of custody", "D. Prior surveillance of the suspect"], answer: 2 },
+            { question: "15. Under Section 6, who is liable for maintaining a drug den?", options: ["A. Only the person who owns the real estate", "B. Anyone who knowingly maintains, manages, or finances a place where dangerous drugs are used or sold", "C. Only the person caught selling drugs inside the den", "D. Any visitor who happens to be outside the den"], answer: 1 },
+            { question: "16. Which of the following is NOT an element of illegal possession of dangerous drugs under Section 11?", options: ["A. Possession of a dangerous drug", "B. Lack of authority", "C. Conscious possession", "D. Intent to sell or distribute"], answer: 3 },
+            { question: "17. If a person commits a crime while under the influence of dangerous drugs, how does RA 9165 treat this fact?", options: ["A. As an exempting circumstance", "B. As a mitigating circumstance", "C. As a qualifying aggravating circumstance", "D. As an alternative circumstance"], answer: 2 },
+            { question: "18. Under the IRR of RA 9165 (as amended by RA 10640), which agency is primarily vested with the custody of all confiscated dangerous drugs?", options: ["A. Philippine National Police (PNP)", "B. National Bureau of Investigation (NBI)", "C. Philippine Drug Enforcement Agency (PDEA)", "D. Department of Justice (DOJ)"], answer: 2 },
+            { question: "19. After an order of destruction is issued by the court, within what timeframe must the destruction of the drugs be carried out?", options: ["A. Within 24 hours", "B. Within 48 hours", "C. Within 72 hours", "D. Within 5 days"], answer: 0 },
+            { question: "20. According to People v. Dahil, which of the following is the FIRST link in the chain of custody?", options: ["A. The turnover of the seized item to the investigating officer", "B. The turnover to the forensic chemist", "C. The submission of the marked evidence to the court", "D. The seizure and marking of the illegal drug"], answer: 3 },
+            { question: "21. What does the \"saving clause\" in Section 21 require to prevent the invalidation of a seizure due to procedural non-compliance?", options: ["A. Proof that the accused is a known drug dealer", "B. Justifiable grounds for deviation and that the integrity and evidentiary value of the items were preserved", "C. A written apology from the apprehending officers", "D. Confession from the accused"], answer: 1 },
+            { question: "22. In People v. Paloma, what test do courts apply to buy-bust operations to guard against instigation and frame-up?", options: ["A. Subjective test", "B. Objective test", "C. Entrapment test", "D. Substantive test"], answer: 1 },
+            { question: "23. Based on Estipona v. People, what is the current rule on plea bargaining in drug cases?", options: ["A. It is absolutely prohibited.", "B. It is allowed subject to judicial discretion and conformity of the prosecution.", "C. It is allowed only for first-time offenders of Section 5.", "D. It is mandatory if the accused confesses."], answer: 1 },
+            { question: "24. In People v. Dizon (2023), the Supreme Court ruled that the non-presentation of which individual may be fatal when the identity of the corpus delicti is disputed?", options: ["A. The confidential informant", "B. The forensic chemist", "C. The barangay captain", "D. The media representative"], answer: 1 },
+            { question: "25. What are the three essential elements that distinguish trafficking in persons?", options: ["A. Fraud, intent, and delivery", "B. The act, the means, and the exploitative purpose", "C. Recruitment, transportation, and crossing a border", "D. Payment, coercion, and sexual intercourse"], answer: 1 },
+            { question: "26. When the victim of trafficking is a child, which element does the prosecution NOT need to prove?", options: ["A. The act (e.g., recruitment, transport)", "B. The exploitative purpose", "C. The means (e.g., force, coercion, deception)", "D. The identity of the recruiter"], answer: 2 },
+            { question: "27. If a recruiter secures forged travel documents and arranges overseas placement for exploitation but is arrested before the victim's departure, what is the criminal liability?", options: ["A. Consummated trafficking", "B. Attempted trafficking", "C. Illegal recruitment only", "D. No criminal liability yet"], answer: 1 },
+            { question: "28. Which of the following is a circumstance that makes trafficking \"qualified\"?", options: ["A. When the victim is an adult male", "B. When the offender is a first-time violator", "C. When it is committed by a syndicate or in large scale", "D. When the recruitment occurs within the same city"], answer: 2 },
+            { question: "29. An employer hires a domestic worker knowing she was trafficked and coerced into employment. Is the employer liable under RA 9208?", options: ["A. No, because the employer did not participate in the recruitment.", "B. No, as long as the employer pays a fair wage.", "C. Yes, for the use of trafficked persons under Section 11.", "D. Yes, for attempted trafficking."], answer: 2 },
+            { question: "30. How is trafficking in persons distinct from illegal recruitment under RA 8042?", options: ["A. Trafficking requires the specific purpose of exploitation.", "B. Illegal recruitment requires crossing an international border.", "C. Trafficking only applies to sexual exploitation.", "D. Illegal recruitment requires the use of force."], answer: 0 },
+            { question: "31. What is the leading Supreme Court case that consolidated the elements of trafficking in persons?", options: ["A. People v. Estipona", "B. Garcia v. Drilon", "C. People v. Casio", "D. Go-Tan v. Tan"], answer: 2 },
+            { question: "32. What is the legal effect of the victim's apparent consent if it was obtained through deception, fraud, or coercion?", options: ["A. It absolves the recruiter of liability.", "B. It mitigates the penalty.", "C. It is legally vitiated and trafficking is still committed.", "D. It transforms the crime into simple illegal recruitment."], answer: 2 },
+            { question: "33. Why does the law dispense with the \"means\" element in cases of child trafficking?", options: ["A. Because children are easier to transport.", "B. Because minors are recognized as incapable of giving meaningful consent to acts of exploitation.", "C. To speed up the judicial process.", "D. Because the penalty for child trafficking is lower."], answer: 1 },
+            { question: "34. According to People v. Lalli, trafficking in persons is considered what type of offense?", options: ["A. A complex crime", "B. A continuing offense", "C. A victimless crime", "D. An absorbed offense"], answer: 1 },
+            { question: "35. How does trafficking differ from kidnapping under the Revised Penal Code?", options: ["A. Kidnapping centers on the movement of persons; trafficking centers on deprivation of liberty.", "B. Trafficking focuses on the movement or control of persons for exploitative purposes; kidnapping centers on deprivation of liberty.", "C. Trafficking requires a ransom; kidnapping requires forced labor.", "D. There is no difference; they are the same crime."], answer: 1 },
+            { question: "36. Which of the following acts is punishable under Section 4 of RA 9208?", options: ["A. Recruitment", "B. Harboring", "C. Receipt of persons", "D. All of the above"], answer: 3 },
+            { question: "37. In Garcia v. Drilon, the Supreme Court upheld the constitutionality of RA 9262 based on what legal principle?", options: ["A. It is a valid classification grounded on substantial distinctions (pervasive vulnerability of women).", "B. It promotes formal equality over substantive equality.", "C. It is an exercise of the state's power of eminent domain.", "D. Men are inherently more violent than women."], answer: 0 },
+            { question: "38. According to Dabalos v. RTC, does RA 9262 require a pattern or habitual conduct for physical violence cases?", options: ["A. Yes, a series of acts must be proven.", "B. Yes, unless the victim is a minor.", "C. No, a single act of physical violence is sufficient.", "D. No, but the violence must result in permanent disability."], answer: 2 },
+            { question: "39. Under RA 9262, is it necessary for the intimate relationship to be ongoing at the time the violence is committed?", options: ["A. Yes, the law only protects current spouses or partners.", "B. No, the past or present existence of a qualifying intimate relationship is sufficient.", "C. Yes, unless they share a common child.", "D. No, the law applies to any relationship, even strangers."], answer: 1 },
+            { question: "40. Can sexual violence under RA 9262 be committed within a marriage?", options: ["A. No, marriage implies continuing consent.", "B. Yes, sexual autonomy remains protected regardless of marital status.", "C. Yes, but only if the spouses are legally separated.", "D. No, it is classified as marital rape under a different law."], answer: 1 },
+            { question: "41. Which of the following acts constitutes psychological violence under Section 5(c) of RA 9262?", options: ["A. Deprivation of financial support", "B. Repeated verbal abuse and intimidation causing mental suffering", "C. Inflicting bodily harm", "D. Forcing a partner to watch pornography"], answer: 1 },
+            { question: "42. In Reyes v. Ines-Luciano, what must the prosecution establish for psychological violence under Section 5(i)?", options: ["A. Medical or expert testimony proving insanity", "B. Physical injuries resulting from the emotional distress", "C. Acts constituting psychological violence and resulting mental or emotional anguish", "D. A continuing relationship at the time of the complaint"], answer: 2 },
+            { question: "43. Deliberate deprivation of financial support to a common child, despite the capacity to provide, constitutes what specific offense under RA 9262?", options: ["A. Psychological violence", "B. Economic abuse", "C. Child abuse under RA 7610", "D. Civil breach of contract"], answer: 1 },
+            { question: "44. In People v. Genosa, the Supreme Court recognized Battered Woman Syndrome (BWS) as a form of what?", options: ["A. Insanity (Exempting circumstance)", "B. Self-defense (Justifying circumstance)", "C. Mitigating circumstance", "D. Absolutory cause"], answer: 1 },
+            { question: "45. According to People v. Caballes, how must Battered Woman Syndrome be established in court?", options: ["A. Through the victim's sole testimony", "B. Through a barangay certification", "C. Through credible expert testimony", "D. Through physical evidence of scars"], answer: 2 },
+            { question: "46. What is the nature of the intent required for a conviction under RA 9262?", options: ["A. It is a specific intent crime requiring malice.", "B. It is a general intent crime; intent is inferred from the voluntary commission of abusive acts.", "C. It requires proof of premeditation.", "D. It is a strict liability offense requiring no intent."], answer: 1 },
+            { question: "47. Does every abused woman suffer from Battered Woman Syndrome (BWS)?", options: ["A. Yes, it is presumed by law.", "B. Yes, if the abuse lasted for more than a year.", "C. No, it must be proven as a specific psychological state resulting from repeated abuse.", "D. No, BWS is only applicable to married women."], answer: 2 },
+            { question: "48. According to Go-Tan v. Tan, what is the primary nature of protection orders under RA 9262?", options: ["A. Punitive and penal", "B. Preventive and protective", "C. Civil and compensatory", "D. Administrative and disciplinary"], answer: 1 },
+            { question: "49. Accessing another person's email or bank account without right or authorization constitutes what offense under RA 10175?", options: ["A. Illegal Interception", "B. System Interference", "C. Illegal Access", "D. Data Interference"], answer: 2 },
+            { question: "50. The intentional or reckless alteration, damaging, or deletion of computer data without right is known as:", options: ["A. System Interference", "B. Data Interference", "C. Computer-related Forgery", "D. Cybersex"], answer: 1 },
+            { question: "51. Launching a distributed denial-of-service (DDoS) attack that crashes a website is a classic example of:", options: ["A. Cybersquatting", "B. Data Interference", "C. System Interference", "D. Illegal Interception"], answer: 2 },
+            { question: "52. Acquiring a domain name over the internet in bad faith to profit or destroy reputation, especially when similar to a trademark, is called:", options: ["A. Computer-related fraud", "B. Computer-related identity theft", "C. Cybersquatting", "D. Misuse of devices"], answer: 2 },
+            { question: "53. Manipulating online banking systems to divert funds to another account with fraudulent intent is an example of:", options: ["A. Computer-related forgery", "B. Computer-related fraud", "C. Illegal access", "D. System interference"], answer: 1 },
+            { question: "54. Engaging in the lascivious exhibition of sexual organs through ICT for favor or consideration falls under what offense?", options: ["A. Child Pornography", "B. Unsolicited Commercial Communications", "C. Cybersex", "D. Cyber Libel"], answer: 2 },
+            { question: "55. In Disini v. Secretary of Justice, why was Section 4(c)(3) on unsolicited commercial communications (spam) struck down as unconstitutional?", options: ["A. It violated the right to privacy.", "B. It violated the right against unreasonable searches.", "C. It violated the constitutional guarantee of freedom of expression.", "D. It constituted double jeopardy."], answer: 2 },
+            { question: "56. Which of the following is an element of cyber libel?", options: ["A. Imputation of a discreditable act or condition", "B. Publication through a computer system", "C. Identity of the offended party and malice", "D. All of the above"], answer: 3 },
+            { question: "57. Under Section 5 of RA 10175, what are the requirements to be held liable for aiding or abetting a cybercrime?", options: ["A. Financial gain from the offense", "B. Knowledge of the commission and intentional assistance or facilitation", "C. Being a direct employee of the principal offender", "D. Use of encryption to hide the crime"], answer: 1 },
+            { question: "58. Why did the Supreme Court invalidate Section 12 (real-time collection of traffic data)?", options: ["A. Because traffic data is completely public", "B. Because it allowed surveillance without prior judicial warrant, violating the right against unreasonable searches and seizures", "C. Because it violated freedom of expression", "D. Because the DOJ lacked the technical capability"], answer: 1 },
+            { question: "59. Section 19, which empowered the DOJ to restrict or block access to computer data upon a prima facie finding, was struck down for violating what?", options: ["A. Right to travel", "B. Equal protection clause", "C. Due process clause and protection against prior restraint on speech", "D. Right against double jeopardy"], answer: 2 },
+            { question: "60. According to the Supreme Court in Causing v. People (2023), what is the prescriptive period for cyber libel?", options: ["A. 1 year", "B. 5 years", "C. 10 years", "D. 15 years"], answer: 0 },
+            { question: "61. In People v. Soliman, what did the Court rule regarding the penalties for cyber libel?", options: ["A. The court must always impose imprisonment.", "B. The court retains the discretion to impose either imprisonment or a fine.", "C. The penalty is exclusively a fine.", "D. Administrative issuances dictate the mandatory penalty."], answer: 1 },
+            { question: "62. What is the principal offense under Section 28 of RA 10591?", options: ["A. Carrying a firearm outside a residence", "B. Unlawful acquisition or possession of firearms and ammunition", "C. Arms smuggling", "D. Planting of evidence"], answer: 1 },
+            { question: "63. Which of the following is considered an aggravating circumstance that leads to \"Qualified Illegal Possession\" under Section 28?", options: ["A. Possession of an unloaded pistol", "B. Possession of a firearm with tampered serial numbers", "C. Possession of a licensed firearm by a minor", "D. Possession of ammunition only"], answer: 1 },
+            { question: "64. What offense is committed when firearms or ammunition are unlawfully imported or exported across Philippine borders without legal authority?", options: ["A. Illegal distribution", "B. Arms smuggling", "C. Gun running", "D. Illegal manufacture"], answer: 1 },
+            { question: "65. Grinding off the serial number of a firearm to prevent law enforcement tracing is punishable as:", options: ["A. Arms smuggling", "B. Qualified illegal possession", "C. Tampering, alteration, or removal of firearm identification", "D. Illegal manufacture"], answer: 2 },
+            { question: "66. As a general rule under Section 29, what happens when an unlicensed firearm is used in the commission of a crime like murder or robbery?", options: ["A. It is charged as a completely separate and independent offense.", "B. It is considered an aggravating circumstance, enhancing the penalty of the principal offense.", "C. It is absorbed into the principal offense without affecting the penalty.", "D. It is ignored if the principal crime is consummated."], answer: 1 },
+            { question: "67. In crimes such as rebellion, insurrection, or coup d'état, how is the illegal possession of firearms treated?", options: ["A. It serves as an aggravating circumstance.", "B. It is prosecuted separately to increase the penalty.", "C. It is absorbed into the rebellion itself under the doctrine of absorption.", "D. It results in the immediate forfeiture of citizenship."], answer: 2 },
+            { question: "68. A licensed gun owner brings a handgun in public transport without a Permit to Carry Firearm Outside Residence (PTCFOR). What offense is committed?", options: ["A. Illegal possession of firearm", "B. Qualified illegal possession", "C. Carrying firearm outside residence without permit (Section 31)", "D. No offense, since the firearm is licensed"], answer: 2 },
+            { question: "69. Under Section 30, can corporate officers of a security agency be held liable if they knowingly authorize guards to use unregistered firearms?", options: ["A. Yes, RA 10591 extends liability to juridical persons and responsible officers.", "B. No, only the security guard holding the firearm is liable.", "C. No, corporate officers have absolute immunity.", "D. Yes, but only for administrative fines."], answer: 0 },
+            { question: "70. A law enforcement officer intentionally places a firearm in a suspect's residence to falsely implicate them. What offense is committed?", options: ["A. Illegal possession of firearm", "B. Tampering of evidence", "C. Planting of evidence involving firearms (Section 38)", "D. Perjury"], answer: 2 },
+            { question: "71. In People v. Oco, the Supreme Court ruled that possession of an unlicensed firearm is a \"malum prohibitum\" offense. What does this mean?", options: ["A. Criminal intent (mens rea) is essential for conviction.", "B. Mere possession without authority suffices; criminal intent is not essential.", "C. The accused must have intended to use the firearm.", "D. Ownership is a valid defense."], answer: 1 },
+            { question: "72. In People v. Ladjaalam, the Court ruled that illegal possession of a firearm is NOT a separate offense when used in homicide, but instead:", options: ["A. Becomes an exempting circumstance", "B. Becomes an aggravating circumstance", "C. Is completely absorbed with no effect on the penalty", "D. Results in double jeopardy"], answer: 1 },
+            { question: "73. According to People v. San Juan, what is sufficient to establish the non-issuance of authority (lack of license)?", options: ["A. A sworn statement from the arresting officer", "B. A confession from the accused", "C. Certification from the Firearms and Explosives Office (FEO under the PNP)", "D. Testimony of a neighbor"], answer: 2 },
+            { question: "74. What happens to firearms, ammunition, and accessories used in violation of RA 10591 upon conviction?", options: ["A. They are returned to the owner after a fine is paid.", "B. They are auctioned to the public.", "C. They are subject to mandatory confiscation and forfeiture in favor of the government.", "D. They are donated to local government units."], answer: 2 },
+            { question: "75. Under Section 4 of RA 11479, terrorism is a composite crime. What element \"elevates\" ordinary crimes (like murder or arson) into terrorism?", options: ["A. The use of explosive devices", "B. The involvement of foreign nationals", "C. A specific terroristic purpose and intent (heightened mens rea)", "D. Funding from an international organization"], answer: 2 },
+            { question: "76. Which of the following is considered a \"terroristic purpose\" under Section 4?", options: ["A. To intimidate the general public", "B. To create an atmosphere of fear", "C. To coerce the government into acting or refraining from acting", "D. All of the above"], answer: 3 },
+            { question: "77. Under Section 5 (Inciting to Terrorism), what is the core act being punished?", options: ["A. The execution of a terrorist bombing", "B. Speech, expression, and symbolic acts that actively encourage or normalize terrorist violence", "C. Traveling abroad to join a terrorist group", "D. Providing funds to a terrorist"], answer: 1 },
+            { question: "78. What critical threshold must inciting speech cross to be punishable under Section 5, ensuring legitimate dissent is protected?", options: ["A. It must be written in a major newspaper.", "B. It must create a danger that terrorism may actually be committed (akin to a \"clear and present risk\" standard).", "C. It must be accompanied by physical violence.", "D. It must be directed at the President."], answer: 1 },
+            { question: "79. Section 6 criminalizes providing or receiving training. What is the specific intent requirement for this training to be illegal?", options: ["A. It must be intended for military use.", "B. It must be intended for the commission of terrorism.", "C. It must involve firearms.", "D. It must be conducted abroad."], answer: 1 },
+            { question: "80. Under Section 7 (Recruitment to and Membership in a Terrorist Organization), what type of membership is punishable even without participating in a specific attack?", options: ["A. Unwitting involvement", "B. Knowing and intentional (voluntary) membership", "C. Forced membership", "D. Membership in any political party"], answer: 1 },
+            { question: "81. What is the gravamen of the offense under Section 8 (Foreign Terrorist Travel)?", options: ["A. Overstaying a tourist visa", "B. The crossing of jurisdictional boundaries (or attempt to) for the purpose of engaging in terrorism-related activities", "C. Bringing undeclared cash across borders", "D. Working abroad without a permit to fund terrorists"], answer: 1 },
+            { question: "82. Under Section 9, accomplice liability for terrorism requires what foundational prerequisite?", options: ["A. A terrorist act has actually been committed.", "B. The accomplice must directly execute the attack.", "C. The accomplice must be a formal member of the organization.", "D. A public declaration of intent to commit terrorism."], answer: 0 },
+            { question: "83. Which of the following is a mode of accessory liability under Section 10?", options: ["A. Profiting from the crime", "B. Concealment or destruction of evidence", "C. Harboring or assisting escape of the perpetrators", "D. All of the above"], answer: 3 },
+            { question: "84. Under RA 11479, how long is the maximum permissible preventive detention period (without judicial warrant) if all extensions are granted?", options: ["A. 3 days", "B. 14 days", "C. 24 days (14 days, extendible by 10 days)", "D. 36 hours"], answer: 2 },
+            { question: "85. Which body implements the administrative \"Designation\" of terrorist individuals or groups?", options: ["A. Regional Trial Court", "B. Anti-Terrorism Council (ATC)", "C. Court of Appeals", "D. Commission on Human Rights"], answer: 1 },
+            { question: "86. Which court handles the formal judicial \"Proscription\" of a terrorist organization?", options: ["A. Supreme Court", "B. Sandiganbayan", "C. Regional Trial Court", "D. Court of Appeals"], answer: 3 },
+            { question: "87. In Southern Hemisphere Engagement Network, Inc. v. ATC, how did the Supreme Court interpret the definition of terrorism under Section 4?", options: ["A. It is overly broad and unconstitutional.", "B. It criminalizes all forms of political dissent.", "C. The specific intent to intimidate the public or coerce the government operates as a safeguard against overbreadth.", "D. It applies to any crime committed by a group of three or more people."], answer: 2 },
+            { question: "88. Under RA 11930, the definition of a \"child\" includes a person below 18 years of age, AND:", options: ["A. Anyone enrolled in an educational institution", "B. Any person above 18 who is unable to fully protect themselves due to a physical or mental disability or condition", "C. Any person who claims to be a minor online", "D. Anyone who is financially dependent on their parents"], answer: 1 },
+            { question: "89. What law did RA 11930 effectively repeal by reenactment?", options: ["A. RA 7610 (Special Protection of Children Against Abuse)", "B. RA 9262 (Anti-VAWC)", "C. RA 9775 (Anti-Child Pornography Act of 2009)", "D. RA 10175 (Cybercrime Prevention Act)"], answer: 2 },
+            { question: "90. What is the defining feature that distinguishes OSAEC (Online Sexual Abuse or Exploitation of Children) from traditional child abuse offenses?", options: ["A. The act must involve physical contact.", "B. The act must be committed by a foreigner.", "C. The act is committed and facilitated through Information and Communications Technology (ICT).", "D. The act requires the exchange of physical cash."], answer: 2 },
+            { question: "91. RA 11930 replaced the term \"child pornography\" with what specific term to emphasize the abusive nature of the conduct?", options: ["A. Digital Child Exploitation Media", "B. Child Sexual Abuse or Exploitation Materials (CSAEM)", "C. Online Minor Exploitation Content", "D. Virtual Child Abuse"], answer: 1 },
+            { question: "92. Does the depiction in CSAEM require actual physical sexual activity?", options: ["A. Yes, there must be proof of physical contact.", "B. No, simulated sexual conduct or digital manipulation (like deepfakes) making a child appear in sexual situations is sufficient.", "C. Yes, unless the child consented.", "D. No, but the material must be sold for profit to be punishable."], answer: 1 },
+            { question: "93. Under Section 5, is the mere possession of CSAEM (without intent to distribute) a punishable act?", options: ["A. No, possession is protected under the right to privacy.", "B. Yes, because it sustains demand for exploitative content and perpetuates harm.", "C. No, only the original producer is liable.", "D. Yes, but only if the possessor pays for it."], answer: 1 },
+            { question: "94. What offense involves a calculated process of using ICT to build trust, emotional dependence, or familiarity with a child for the ultimate purpose of sexual abuse?", options: ["A. Cybersquatting", "B. Online grooming", "C. Phishing", "D. Identity theft"], answer: 1 },
+            { question: "95. In online grooming, does the law require that the actual sexual act has already occurred for liability to attach?", options: ["A. Yes, grooming is not punishable without a consummated sexual act.", "B. No, it is sufficient that the grooming behavior is clearly directed toward eventual sexual exploitation.", "C. Yes, unless the child reports it immediately.", "D. No, but physical meeting must have taken place."], answer: 1 },
+            { question: "96. A person moderates an online channel knowing it is used for exchanging explicit materials involving minors. Even if they don't post the content themselves, what are they liable for?", options: ["A. Attempted OSAEC", "B. Facilitation and participation in CSAEM", "C. Cyber libel", "D. Tipping off"], answer: 1 },
+            { question: "97. An individual operates a subscription platform and receives advertising revenue from users sharing CSAEM. What specific offense applies to this economic incentive?", options: ["A. Benefiting from OSAEC or CSAEM activities", "B. Tax evasion", "C. Money laundering", "D. Estafa"], answer: 0 },
+            { question: "98. Under RA 11930, internet intermediaries and digital platforms can be held liable if they fail to act upon acquiring what regarding illegal activity?", options: ["A. A court order only", "B. Actual or constructive knowledge of illegal content or activity", "C. A petition signed by 1,000 users", "D. A final conviction of the user"], answer: 1 },
+            { question: "99. Once an intermediary acquires knowledge of CSAEM on their platform, what is their legal obligation?", options: ["A. To take prompt and appropriate action (remove content, suspend accounts, report) within a reasonable period", "B. To wait for a search warrant before acting", "C. To directly message the offender and issue a warning", "D. To publicly shame the user"], answer: 0 },
+            { question: "100. If an internet platform experiences repeated uploads of exploitative materials in a specific group and has received prior takedown requests but does nothing, what kind of knowledge is established?", options: ["A. Abstract knowledge", "B. Presumed knowledge", "C. Constructive knowledge", "D. Theoretical knowledge"], answer: 2 },
+            
+            { question: "101. Mayor X receives kickbacks from a government project. To avoid detection, he transfers the money to a dummy corporation he secretly owns, making the funds appear as legitimate profits from a catering business. Which stage of money laundering does this best illustrate?", options: ["A. Placement", "B. Integration", "C. Tipping off", "D. Structuring"], answer: 1 },
+            { question: "102. A real estate broker facilitates the sale of a luxury penthouse to a client. The broker knows the client is a convicted drug lord and that the cash being used is from drug sales. Can the broker be held criminally liable under RA 9160?", options: ["A. No, because the broker did not participate in the drug trade.", "B. No, because buying real estate is a legitimate business transaction.", "C. Yes, for conspiring to commit money laundering under Section 4(a)(3).", "D. Yes, but only if the broker receives a commission larger than the legal limit."], answer: 2 },
+            { question: "103. A bank teller notices a client depositing exactly P450,000 every day for two weeks to avoid the P500,000 threshold for covered transaction reports. The teller, knowing the money is from illegal gambling, helps the client schedule the deposits. What specific act is the teller committing?", options: ["A. Attempted money laundering", "B. Facilitating money laundering through 'smurfing' under Section 4(a)(2)", "C. Tipping off", "D. Consummated predicate crime"], answer: 1 },
+            { question: "104. The AMLC files a petition to freeze the bank accounts of Mr. Y, who is suspected of estafa. The Court of Appeals grants the freeze order. Mr. Y argues the order is invalid because he has not yet been convicted of estafa. Is Mr. Y correct?", options: ["A. Yes, a freeze order requires a final conviction of the predicate offense.", "B. Yes, freeze orders violate the constitutional presumption of innocence.", "C. No, a freeze order only requires probable cause that the funds are related to an unlawful activity.", "D. No, but the AMLC must prove his guilt beyond a reasonable doubt before freezing the funds."], answer: 2 },
+            { question: "105. A syndicate falsifies import documents to justify transferring illicit funds abroad. However, authorities intercept the documents and block the transfer before the money leaves the Philippines. Under RA 9160, what is the criminal liability of the syndicate?", options: ["A. Consummated money laundering", "B. Attempted money laundering under Section 5", "C. Conspiracy to commit smuggling", "D. No criminal liability since the money was never moved"], answer: 1 },
+            { question: "106. Police execute a search warrant on the house of Mr. A and find 50 grams of shabu. Mr. A claims he is just keeping the drugs for a friend and never intended to sell or use them. Can Mr. A be convicted of illegal possession of dangerous drugs?", options: ["A. No, because he had no intent to sell.", "B. No, because mere custody without intent to use is not punishable.", "C. Yes, because he had conscious possession and lack of authority.", "D. Yes, but only for illegal use of dangerous drugs."], answer: 2 },
+            { question: "107. During a buy-bust operation, police seize suspected shabu from a pusher. However, because it is late at night, they conduct the inventory and taking of photographs without an elected public official or a media representative present, and offer no justification for their absence in court. What is the likely effect on the case?", options: ["A. The accused will be convicted based on the police officers' presumption of regularity.", "B. The court will impose a fine on the police officers but convict the accused.", "C. The non-compliance is fatal to the prosecution's case and casts serious doubt on the integrity of the evidence, likely leading to acquittal.", "D. The case will be suspended until the missing witnesses can sign the inventory."], answer: 2 },
+            { question: "108. Mr. B owns a secluded rest house. He knows that his friends use the property every weekend to sell and consume ecstasy, and he charges them an \"entrance fee\" for privacy. What offense is Mr. B committing under RA 9165?", options: ["A. Illegal possession of dangerous drugs", "B. Unnecessary prescription of dangerous drugs", "C. Maintenance of a Den, Dive or Resort under Section 6", "D. Illegal chemical diversion"], answer: 2 },
+            { question: "109. X is arrested for carrying a transparent plastic sachet containing white crystalline substance. In court, the forensic chemist fails to testify on how the specimen was resealed and safeguarded after examination. Based on the ruling in People v. Besenio, what will happen to the case?", options: ["A. The accused will be acquitted due to the failure to establish the fourth link in the chain of custody.", "B. The judge will presume the forensic chemist handled it properly.", "C. The accused will be convicted because the arrest was lawful.", "D. The arresting officer can testify on behalf of the forensic chemist to cure the defect."], answer: 0 },
+            { question: "110. A foreigner is caught at the NAIA arrival area with a suitcase containing 2 kilos of cocaine. He argues he did not intend to distribute the drugs in the Philippines but was merely transiting. Is he liable for importation under Section 4?", options: ["A. No, intent to distribute is required for importation.", "B. No, the crime is only consummated if the drugs leave the airport.", "C. Yes, the offense is consummated by the mere act of bringing the prohibited substance into Philippine territory.", "D. Yes, but his penalty is reduced because he is a foreigner."], answer: 2 },
+            { question: "111. Maria is promised a job as a factory worker in Japan. She voluntarily signs a contract, fully consents to travel, and pays her own airfare. Upon arrival, her recruiter confiscates her passport and forces her to work in a brothel. Her recruiter argues that Maria cannot claim trafficking because she consented to the trip. Is the recruiter correct?", options: ["A. Yes, consent is an absolute defense in trafficking.", "B. Yes, her consent makes it a case of simple illegal recruitment, not trafficking.", "C. No, trafficking is committed because her initial consent is legally vitiated by deceitful means and exploitative purpose.", "D. No, but the recruiter is only liable for kidnapping."], answer: 2 },
+            { question: "112. A mother, struggling with poverty, sells her 14-year-old daughter to a syndicate that creates child sexual abuse materials. Under RA 9208, what specific aggravating circumstance applies to the mother?", options: ["A. Qualified trafficking, because the offender is a parent and the victim is a child.", "B. Attempted trafficking, because poverty mitigates the crime.", "C. Simple trafficking, because the mother did not personally exploit the child.", "D. No trafficking occurred; it falls under the Anti-Child Abuse Law (RA 7610) exclusively."], answer: 0 },
+            { question: "113. A local businessman hires an underage girl as a domestic helper, fully aware that she was recruited from a remote province through deception and threats by a third party. The businessman subjects her to 16-hour workdays without pay. Is the businessman liable under RA 9208?", options: ["A. No, because he did not participate in the recruitment or transportation of the girl.", "B. No, because domestic work is not considered exploitation.", "C. Yes, under Section 11, for knowingly engaging the services of a trafficked individual for labor exploitation.", "D. Yes, but only for violations of the Labor Code."], answer: 2 },
+            { question: "114. During trial for a case of child trafficking, the defense lawyer argues that the prosecution failed to prove that \"force, intimidation, or deception\" was used to recruit the 12-year-old victim. Based on People v. Casio, is the defense lawyer's argument valid?", options: ["A. Yes, all three elements (act, means, purpose) must always be proven beyond reasonable doubt.", "B. Yes, unless the child testifies in open court.", "C. No, because in cases involving children, the law dispenses with the requirement of proving the \"means\" element.", "D. No, the burden of proof shifts to the defense to prove consent."], answer: 2 },
+            { question: "115. Police raid a warehouse and find 20 adults locked inside. Evidence shows they were recruited by a syndicate to be sent abroad for forced organ harvesting. The defense argues no trafficking occurred because the victims haven't been transported abroad yet. Are they correct?", options: ["A. Yes, trafficking is only consummated upon crossing an international border.", "B. No, harboring and maintaining persons for exploitative purposes are expressly punishable acts under Section 4.", "C. Yes, the crime is merely attempted trafficking at this stage.", "D. No, they are liable for illegal detention, not trafficking."], answer: 1 },
+            { question: "116. Mark and Sarah dated for two years but broke up six months ago. Today, Mark sees Sarah at a restaurant with another man. Furious, Mark confronts her and slaps her across the face. Mark argues that RA 9262 does not apply because their dating relationship had already ceased. Based on Dabalos v. RTC, is Mark correct?", options: ["A. Yes, the law only protects women in current relationships.", "B. Yes, the offense falls under slight physical injuries in the Revised Penal Code.", "C. No, it is immaterial whether the relationship had ceased as long as there is evidence of the past intimate relationship.", "D. No, but Sarah must prove that Mark stalked her prior to the incident."], answer: 2 },
+            { question: "117. John earns P150,000 a month. Angry that his wife Jane filed for legal separation, he completely stops providing financial support for her and their 5-year-old child, deliberately telling her, \"Let's see how you survive without my money.\" What specific offense under RA 9262 is John committing?", options: ["A. Psychological violence", "B. Economic abuse under Section 5(e)", "C. Physical violence", "D. He commits no crime; failure to support is a purely civil matter."], answer: 1 },
+            { question: "118. Husband X discovers his wife Y is having an affair. During a heated argument, X hits Y once, causing a bruise. X argues in court that a single, isolated act of physical violence does not constitute a crime under RA 9262 because the law is meant to address a \"pattern\" of abuse. Is X correct?", options: ["A. Yes, RA 9262 explicitly requires a series of violent acts.", "B. Yes, isolated incidents of physical harm are governed strictly by the Revised Penal Code.", "C. No, a single act of physical violence is sufficient to constitute an offense under Section 5(a).", "D. No, but the penalty is automatically lowered by two degrees."], answer: 2 },
+            { question: "119. Jane is on trial for killing her abusive husband. She claims self-defense under the Battered Woman Syndrome (BWS). To successfully invoke BWS, what must the defense present according to People v. Caballes?", options: ["A. Testimony from the barangay captain who witnessed the abuse", "B. Credible expert testimony from a psychological or psychiatric professional", "C. Only Jane's sworn statement detailing the history of abuse", "D. Hospital records showing past physical injuries"], answer: 1 },
+            { question: "120. A husband publicly humiliates his wife at a party, repeatedly calling her \"stupid and useless,\" which causes her severe anxiety and emotional distress. During the trial for psychological violence, the husband argues he cannot be convicted because the wife did not present a psychiatrist to testify about her mental anguish. Based on Reyes v. Ines-Luciano, is expert testimony strictly required?", options: ["A. Yes, psychological violence requires medical proof of mental damage.", "B. Yes, otherwise it is just considered marital banter.", "C. No, emotional distress does not require expert testimony and can be proven through the victim's narration of experiences.", "D. No, but only if physical violence was also present."], answer: 2 },
+            { question: "121. Employee A hacks into his company's digital HR system and alters his employment records, making it appear that he holds a master's degree, intending to use this fabricated data to demand a promotion. What cybercrime did Employee A commit?", options: ["A. Cyber libel", "B. System interference", "C. Computer-related forgery (Section 4[b][1])", "D. Data interference"], answer: 2 },
+            { question: "122. B buys a piece of software online that is specifically designed and marketed solely for cracking Wi-Fi passwords and stealing bank credentials. He installs it on his laptop but hasn't used it yet. Under RA 10175, what offense is B committing?", options: ["A. Illegal Interception", "B. Misuse of devices (Section 4[a][5])", "C. Computer-related fraud", "D. No crime, because he hasn't successfully hacked anyone yet."], answer: 1 },
+            { question: "123. C creates a fake social media profile using the photos, full name, and address of her former friend D. C uses this profile to message D's coworkers, asking them to send money to a GCash account. What crime has C committed?", options: ["A. Computer-related identity theft (Section 4[b][3])", "B. Cybersquatting", "C. Cybersex", "D. Illegal Access"], answer: 0 },
+            { question: "124. In 2021, X posts a highly defamatory statement about Y on a public blog. Y only discovers the post in 2024 and immediately files a cyber libel complaint. X files a motion to dismiss, arguing that the one-year prescriptive period for libel has already lapsed. Based on Causing v. People (2023), will the case be dismissed?", options: ["A. Yes, prescription begins from the exact date the post was uploaded.", "B. Yes, because cyber libel prescribes in 12 years under special laws.", "C. No, the one-year prescriptive period is reckoned from the date of discovery of the defamatory publication by the offended party.", "D. No, cyber libel offenses are imprescriptible."], answer: 2 },
+            { question: "125. Z, an angry customer, floods a small online retailer's website with millions of fake requests using a botnet (a DDoS attack), causing the website's servers to crash and become unavailable for three days. What offense is Z liable for?", options: ["A. Illegal Access", "B. System interference (Section 4[a][4])", "C. Computer-related Fraud", "D. Cybersquatting"], answer: 1 },
+            { question: "126. X, a private citizen, owns a legally licensed 9mm pistol. He brings it with him inside a shopping mall hidden in his backpack. When approached by guards, he admits he does not have a Permit to Carry Firearm Outside Residence (PTCFOR). Can X be charged under RA 10591?", options: ["A. No, lawful ownership of the gun is an absolute defense.", "B. No, the security guards have no police power.", "C. Yes, for carrying a firearm outside residence without a permit (Section 31).", "D. Yes, for arms smuggling."], answer: 2 },
+            { question: "127. During a heated argument, Y shoots and kills Z using an unregistered, unlicensed firearm. When the prosecutor files the Information, should Y be charged with two separate crimes (Murder and Illegal Possession of Firearms)?", options: ["A. Yes, they are distinct offenses violating different laws.", "B. No, the illegal possession of the firearm is absorbed and treated only as an aggravating circumstance to the murder charge under Section 29.", "C. No, the murder charge is absorbed by the illegal possession charge.", "D. Yes, but the penalties will be served concurrently."], answer: 1 },
+            { question: "128. Members of an armed insurgent group attack a military outpost in furtherance of a rebellion. They are captured carrying high-powered, unlicensed rifles. Based on People v. De Gracia and the absorption doctrine, how will the firearms be treated?", options: ["A. They will be charged with Rebellion and Qualified Illegal Possession.", "B. The firearm use will serve as a generic aggravating circumstance.", "C. The illegal possession is absorbed into the political crime of rebellion and no separate charge under RA 10591 is filed.", "D. They will only be charged with Illegal Possession because it is easier to prove."], answer: 2 },
+            { question: "129. Police Officer P, wanting to meet his arrest quota, stops Q at a checkpoint. P secretly drops a rusted, unlicensed revolver onto the backseat of Q's car and arrests Q for illegal possession. What grave offense did Officer P commit under RA 10591?", options: ["A. Arms smuggling", "B. Tampering of firearm identification", "C. Planting of evidence involving firearms (Section 38)", "D. Malfeasance in office only"], answer: 2 },
+            { question: "130. In a trial for illegal possession of firearms, the accused claims he was not the registered owner of the gun found in his waistband, but merely borrowed it from a friend. Does this defense hold weight based on People v. Molina?", options: ["A. Yes, ownership is an essential element of the crime.", "B. Yes, lack of ownership negates criminal intent.", "C. No, ownership is immaterial; possession without a valid license or authority is sufficient for conviction.", "D. No, but his penalty is reduced to a fine."], answer: 2 },
+            { question: "131. A disgruntled employee sets fire to the warehouse of his former employer purely out of personal revenge for being fired. The fire causes extensive property damage. Can the employee be charged with Terrorism under Section 4 of RA 11479?", options: ["A. Yes, because arson is a predicate crime and it caused extensive damage.", "B. Yes, because it endangered human life.", "C. No, because he lacked the specific terroristic purpose (intent to intimidate the public or coerce the government).", "D. No, because terrorism requires the use of explosives, not fire."], answer: 2 },
+            { question: "132. A prominent social media figure posts a viral video praising the perpetrators of a recent bombing, calling them \"heroes,\" and urging his followers to \"do the same to government buildings.\" The video creates panic and inspires several bomb threats. What specific offense has the influencer committed?", options: ["A. Terrorism (Section 4)", "B. Inciting to Terrorism (Section 5)", "C. Accomplice to Terrorism", "D. Cyber libel"], answer: 1 },
+            { question: "133. Mr. A travels to an isolated province to conduct a 3-day workshop for 10 men, teaching them how to mix household chemicals to create improvised explosive devices (IEDs). He tells them the goal is to bomb public transport terminals. No bombs have been built yet. What crime did Mr. A commit?", options: ["A. Attempted Terrorism", "B. Training, Preparation, and Facilitation of Terrorism (Section 6)", "C. Illegal Manufacture of Firearms", "D. No crime, as training is protected by academic freedom."], answer: 1 },
+            { question: "134. A terrorist cell successfully detonates a bomb in a city plaza. The next day, knowing exactly who they are and what they did, Mr. B allows the bombers to hide in his farmhouse and burns the clothes they wore during the attack to destroy forensic evidence. What is Mr. B's liability under RA 11479?", options: ["A. Principal to Terrorism", "B. Accomplice to Terrorism", "C. Accessory to Terrorism (Section 10)", "D. Obstruction of Justice under the Revised Penal Code only"], answer: 2 },
+            { question: "135. A university student gets radicalized online, buys a one-way ticket to the Middle East, and attempts to board a flight at NAIA with the proven intention of joining an international terrorist organization to fight in armed conflicts. He is intercepted at the gate. What offense is he liable for?", options: ["A. Foreign Terrorist Travel (Section 8)", "B. Inciting to Terrorism", "C. Violation of the Philippine Passport Act", "D. No crime, because the right to travel is absolute."], answer: 0 },
+            { question: "136. An adult creates a fake profile on a gaming app, befriends a 13-year-old boy, and spends weeks sending him digital gifts and building emotional trust. Eventually, the adult steers the conversation to sexual topics and asks the boy to turn on his webcam. What specific preparatory offense under RA 11930 is the adult committing?", options: ["A. Online Sexual Abuse or Exploitation of Children (OSAEC)", "B. Online Grooming of Children for Sexual Purposes", "C. Benefiting from OSAEC", "D. Attempted Cybersex"], answer: 1 },
+            { question: "137. A tech-savvy individual uses software to combine the face of a real 15-year-old neighborhood girl with a sexually explicit image of an adult, creating a highly realistic \"deepfake.\" He saves it on his phone for personal gratification. Is he liable for CSAEM?", options: ["A. No, because it is not a real photograph of the child's body.", "B. No, because he did not distribute it.", "C. Yes, because CSAEM includes simulated or digitally manipulated images realistically depicting a child in sexual situations, and possession itself is punishable.", "D. Yes, but only for cyber libel."], answer: 2 },
+            { question: "138. A 20-year-old woman with a severe intellectual disability that gives her the mental capacity of an 8-year-old is coerced by a syndicate to perform sexual acts on a live video stream for paying viewers. The defense argues RA 11930 does not apply because the victim is over 18. Is this correct?", options: ["A. Yes, the law strictly applies only to chronological minors (below 18).", "B. Yes, her case falls exclusively under the Anti-Trafficking Act.", "C. No, because RA 11930 defines a \"child\" to include persons 18 or older who are unable to fully protect themselves due to a physical or mental disability.", "D. No, because the age of consent for video streams is 21."], answer: 2 },
+            { question: "139. The administrator of a popular messaging app receives multiple detailed reports from users that a specific chat group is actively trading CSAEM. The administrator intentionally ignores the reports for six months because the group's members pay premium subscription fees to the app. What is the administrator's liability under RA 11930?", options: ["A. They have no liability; platforms cannot be forced to police user content.", "B. Liability for failing to act within a reasonable period despite having actual knowledge, thereby facilitating the offense as an internet intermediary.", "C. Liability only for tax evasion.", "D. Administrative fines only, but no criminal liability."], answer: 1 },
+            { question: "140. An individual runs a website that hosts a payment gateway. He knows that certain vendors on his site are selling access to live-streamed child abuse (OSAEC) and takes a 15% cut of every transaction. He claims he is innocent because he never interacts with the children or the buyers. Under RA 11930, is he criminally liable?", options: ["A. No, payment processors are exempt from liability.", "B. No, because he did not produce the content.", "C. Yes, for knowingly deriving profit, financial gain, or benefit from OSAEC activities.", "D. Yes, but only for failing to register his business."], answer: 2 },
+            
+            { question: "141. To avoid triggering reporting thresholds, a bank employee deliberately breaks down a large, suspicious deposit from a known drug trafficker into smaller amounts. What specific provision of the AMLA is the employee violating?", options: ["A. Section 4(a)(1) - Transacting illicit proceeds", "B. Section 4(a)(2) - Facilitating money laundering (Smurfing)", "C. Section 5 - Attempted money laundering", "D. Section 14 - Tipping off"], answer: 1 },
+            { question: "142. The AMLC secures a freeze order on the bank accounts of Mr. X, who is under investigation for plunder. Mr. X possesses tax filings and business contracts proving the frozen funds came from a legitimate hardware business. What is his primary remedy?", options: ["A. File a motion to quash before the Sandiganbayan", "B. File a petition for certiorari before the Supreme Court", "C. File a petition for the lifting of the freeze order before the Court of Appeals", "D. Wait for the freeze order to automatically expire"], answer: 2 },
+            { question: "143. A bank manager notices that a client’s account is currently under investigation by the AMLC for suspicious transactions. The manager calls the client and advises them to transfer the funds immediately before the account is frozen. What offense is committed?", options: ["A. Money laundering through integration", "B. Breach of confidentiality or \"tipping off\"", "C. Attempted estafa", "D. Accessory to the predicate crime"], answer: 1 },
+            { question: "144. During a raid at a private social gathering, police arrest Mr. Y for holding a glass pipe and a lighter intended for consuming shabu, though no actual drugs are found on him. How does the law treat this specific situation?", options: ["A. He is liable for possession of equipment/paraphernalia, which creates a prima facie presumption of drug use, penalized more severely because it occurred during a party.", "B. He cannot be charged unless drugs are found in his possession.", "C. He is only liable if he tests positive in a confirmatory drug test.", "D. He is liable for maintaining a drug den."], answer: 0 },
+            { question: "145. Police officers conduct a valid buy-bust operation but fail to secure the presence of the required insulating witnesses during the seizure and marking of the drugs. During trial, they offer no valid justification for this deviation. What is the legal consequence?", options: ["A. The evidence is still admissible under the presumption of regularity.", "B. The court will merely reprimand the police officers.", "C. It is fatal to the prosecution's case and creates serious doubts as to the integrity of the evidence, leading to acquittal.", "D. The burden shifts to the accused to prove the drugs were planted."], answer: 2 },
+            { question: "146. A farmer is caught tending to several marijuana plants in a secluded area of a mountain. The farmer argues that he cannot be charged under RA 9165 because the plants are not yet harvested or processed into usable drugs. Is his defense valid?", options: ["A. Yes, cultivation requires the plants to be mature and harvested.", "B. Yes, the plants must be processed into bricks to be punishable.", "C. No, the mere act of planting or cultivating sources of dangerous drugs is punishable regardless of whether they have been harvested or processed.", "D. No, but he can only be charged with attempted cultivation."], answer: 2 },
+            { question: "147. Mr. Z owns a large apartment complex. He discovers that a syndicate is renting several of his units to temporarily harbor young women who are being prepared for forced labor abroad. Z ignores this because the syndicate pays double the rent. Is Z liable under RA 9208?", options: ["A. No, because he did not personally recruit or transport the women.", "B. No, a landlord cannot be held liable for the actions of his tenants.", "C. Yes, under acts that promote trafficking by knowingly leasing premises for trafficking activities.", "D. Yes, but only as an accomplice under the Revised Penal Code."], answer: 2 },
+            { question: "148. A syndicate tricks a 16-year-old girl into traveling to the city with the promise of a scholarship, but upon arrival, she is forced into cybersex operations. During trial, the defense argues the girl voluntarily agreed to the trip. Why is this defense invalid?", options: ["A. Because cybersex is governed by the Cybercrime Prevention Act, not RA 9208.", "B. Because she is a minor, the prosecution is not required to establish the \"means\" (fraud/deception); her consent is legally irrelevant.", "C. Because she did not sign a written contract.", "D. Because the travel did not cross international borders."], answer: 1 },
+            { question: "149. A criminal group systematically recruits dozens of individuals from a rural province to work in a scam farm abroad, confiscating their passports upon deployment. Under RA 9208, how is this crime classified?", options: ["A. Simple trafficking", "B. Qualified trafficking, because it is committed by a syndicate or in large scale.", "C. Attempted trafficking", "D. Large-scale illegal recruitment only"], answer: 1 },
+            { question: "150. A wealthy businessman separates from his wife. Out of spite, he completely stops paying for his children's tuition and daily needs, even though he can easily afford it, intentionally trying to make his wife financially dependent and desperate. What crime is he committing?", options: ["A. Psychological violence", "B. Economic abuse under Section 5(e)", "C. Breach of the Family Code, which is purely civil in nature", "D. Child abuse under RA 7610"], answer: 1 },
+            { question: "151. A woman claims self-defense in the death of her abusive husband, citing Battered Woman Syndrome (BWS). During the trial, she relies solely on her own emotional testimony and the testimony of her mother to prove she suffers from BWS. Will her defense prosper?", options: ["A. Yes, RA 9262 allows emotional distress to be proven through the victim's narration alone.", "B. Yes, the mother's corroborative testimony is sufficient.", "C. No, BWS is a medically recognized psychological condition that must be established through credible expert testimony.", "D. No, BWS is only a mitigating circumstance, not a justifying one."], answer: 2 },
+            { question: "152. A man repeatedly sends threatening texts to his ex-girlfriend, stalks her at her workplace, and publicly humiliates her online. She suffers severe anxiety but does not sustain any physical injuries. Is the man liable under RA 9262?", options: ["A. No, RA 9262 requires actual physical harm to be consummated.", "B. Yes, for psychological violence, which is a legally cognizable injury even in the absence of physical harm.", "C. No, the acts fall exclusively under the Cybercrime Prevention Act.", "D. Yes, but only for unjust vexation."], answer: 1 },
+            { question: "153. To gain an advantage in a corporate espionage scheme, Hacker A uses specialized software to secretly monitor and capture unencrypted emails being sent across a rival company's private Wi-Fi network. What cybercrime is this?", options: ["A. Illegal Access", "B. Illegal Interception", "C. Data Interference", "D. System Interference"], answer: 1 },
+            { question: "154. Individual B registers the domain name \"www.jollibee-delivery-ph.com\" with the sole intention of forcing the fast-food corporation to buy the domain name from him at an exorbitant price. What offense did B commit?", options: ["A. Cybersquatting", "B. Computer-related forgery", "C. Computer-related fraud", "D. Illegal Access"], answer: 0 },
+            { question: "155. In January 2023, Person X posts a highly defamatory, malicious article about Person Y on a hidden web forum. Person Y only discovers this article in March 2025 and files a complaint in April 2025. Will the crime of cyber libel prescribe?", options: ["A. Yes, because it has been more than one year since the post was published.", "B. Yes, because cyber libel prescribes in six months.", "C. No, because the one-year prescriptive period is counted from the date of discovery of the defamatory material by the offended party.", "D. No, because cyber libel is a continuing offense."], answer: 2 },
+            { question: "156. Robber A holds up a convenience store using an unlicensed .45 caliber pistol. Under RA 10591, how will the court treat his use of the unlicensed firearm?", options: ["A. He will be charged with two separate crimes: Robbery and Illegal Possession of Firearms.", "B. The use of the unlicensed firearm will serve as an aggravating circumstance to the principal crime of robbery.", "C. The firearm charge will be absorbed by the robbery, with no additional penalty.", "D. The robbery charge will be dropped, and he will only be tried for the firearm offense."], answer: 1 },
+            { question: "157. Mr. Smith, a licensed gun owner, leaves his house to go to the grocery store with his registered firearm tucked in his waistband. He does not have a Permit to Carry Firearm Outside Residence (PTCFOR). Is he criminally liable?", options: ["A. No, because the firearm is legally licensed to him.", "B. No, the PTCFOR is only an administrative requirement.", "C. Yes, for carrying a firearm outside residence without a permit.", "D. Yes, for qualified illegal possession of firearms."], answer: 2 },
+            { question: "158. To ensure a conviction, a corrupt police officer sneaks a drop-gun (an unlicensed firearm) under the bed of a suspect during a search and claims he found it there. What specific offense does this constitute under RA 10591?", options: ["A. Illegal possession of firearms", "B. Qualified illegal possession", "C. Tampering of evidence", "D. Planting of evidence involving firearms, carrying a significantly higher penalty due to abuse of authority."], answer: 3 },
+            { question: "159. Suspect M purchases a one-way ticket to a known conflict zone abroad. He has encrypted messages on his phone showing he intends to formally affiliate with an overseas extremist group and undergo military-style training. He is arrested at the airport. What is his liability?", options: ["A. Consummated Terrorism", "B. Foreign Terrorist Travel", "C. Attempted Terrorism", "D. Inciting to Terrorism"], answer: 1 },
+            { question: "160. After a successful terrorist bombing, Suspect N deletes all the surveillance footage from the safe house where the bombers plotted the attack, specifically to prevent law enforcement from identifying them. Under RA 11479, how is Suspect N classified?", options: ["A. Principal to Terrorism", "B. Accomplice to Terrorism", "C. Accessory to Terrorism", "D. Facilitator of Terrorism"], answer: 2 },
+            { question: "161. Suspect O is fully aware that a terrorist group is planning an attack on a local market. Two days before the attack, he provides the group with a safe house to store their explosives and map out their routes, though he does not participate in the actual bombing. What is Suspect O's liability?", options: ["A. Principal to Terrorism", "B. Accomplice to Terrorism", "C. Accessory to Terrorism", "D. Inciting to Terrorism"], answer: 1 },
+            { question: "162. A web developer sets up an encrypted forum where users upload and view CSAEM. He does not produce the content himself but charges users a monthly cryptocurrency fee to access the site. What specific offense is he committing under RA 11930?", options: ["A. Online Grooming", "B. Benefiting from OSAEC or CSAEM activities", "C. Cybersquatting", "D. Simple possession of CSAEM"], answer: 1 },
+            { question: "163. An adult poses as a 14-year-old on a gaming platform. Over several months, he builds a relationship with a real 13-year-old player, sending them in-game currency and slowly shifting their chats to explicit sexual topics before asking for a nude photo. This calculated process is legally defined as:", options: ["A. Attempted OSAEC", "B. Online grooming of children for sexual purposes", "C. System interference", "D. Cyber libel"], answer: 1 },
+            { question: "164. A major social media platform receives hundreds of reports regarding a specific page hosting CSAEM. The platform's automated system flags it, but the human moderators ignore the issue for weeks because the page generates high ad revenue. Can the platform face legal consequences?", options: ["A. Yes, for failing to act within a reasonable period despite actual/constructive knowledge, thereby facilitating the distribution of CSAEM.", "B. No, internet intermediaries enjoy absolute immunity from user-generated content.", "C. Yes, but only if they explicitly endorsed the content.", "D. No, reporting to authorities is purely voluntary for private companies."], answer: 0 }
+        ];
+
+        let currentIndex = 0;
+        let isFlipped = false;
+
+        const flashcard = document.getElementById('flashcard');
+        const questionEl = document.getElementById('card-question');
+        const optionsEl = document.getElementById('card-options');
+        const answerEl = document.getElementById('card-answer');
+        const progressEl = document.getElementById('progress-text');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        function loadCard() {
+            if (isFlipped) {
+                flashcard.classList.remove('is-flipped');
+                isFlipped = false;
+                setTimeout(() => populateData(), 300);
+            } else {
+                populateData();
+            }
+            updateControls();
+        }
+
+        function populateData() {
+            const currentQ = questions[currentIndex];
+            
+            progressEl.innerText = `Card ${currentIndex + 1} of ${questions.length}`;
+            questionEl.innerText = currentQ.question;
+            
+            optionsEl.innerHTML = "";
+            currentQ.options.forEach(opt => {
+                const li = document.createElement('li');
+                li.innerText = opt;
+                optionsEl.appendChild(li);
+            });
+
+            answerEl.innerText = currentQ.options[currentQ.answer];
+        }
+
+        function flipCard() {
+            isFlipped = !isFlipped;
+            if (isFlipped) {
+                flashcard.classList.add('is-flipped');
+            } else {
+                flashcard.classList.remove('is-flipped');
+            }
+        }
+
+        function nextCard() {
+            if (currentIndex < questions.length - 1) {
+                currentIndex++;
+                loadCard();
+            }
+        }
+
+        function prevCard() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                loadCard();
+            }
+        }
+
+        function updateControls() {
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === questions.length - 1;
+        }
+
+        function toggleTheme(e) {
+            const htmlTag = document.documentElement;
+            if (e.checked) {
+                htmlTag.setAttribute('data-theme', 'dark');
+            } else {
+                htmlTag.setAttribute('data-theme', 'light');
+                themeText.innerText = 'Theme: Light';
+            }
+        }
+
+        loadCard();
+    </script>
+</body>
+</html>
